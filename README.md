@@ -9,11 +9,11 @@
 
 | Nome | RM |
 |------|-----|
-| [Augusto Barcelos Barros] | RM565065 |
-| [Caio Felipe de Lima Bezerra] | RM556197 |
-| [Juan Francisco Alves Muradas] | RM555541 |
-| [Lucas Derenze Simidu] | RM555931 |
-| [Sofia Fernandes] | RM554873 |
+| Augusto Barcelos Barros | RM565065 |
+| Caio Felipe de Lima Bezerra | RM556197 |
+| Juan Francisco Alves Muradas | RM555541 |
+| Lucas Derenze Simidu | RM555931 |
+| Sofia Fernandes | RM554873 |
 
 ---
 
