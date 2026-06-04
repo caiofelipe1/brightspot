@@ -64,9 +64,14 @@ cd brightspot
 # Instale as dependências
 npm install
 
-# Inicie o projeto
+# Inicie o projeto (mesma rede Wi-Fi)
 npx expo start
+
+# Se o celular estiver em rede diferente da máquina (ex: dados móveis)
+npx expo start --tunnel
 ```
+
+> **Nota:** use o `--tunnel` se o QR code não conectar normalmente. Na primeira execução, será pedida a instalação do `@expo/ngrok`.
 
 ### Executar em cada plataforma
 
@@ -182,7 +187,7 @@ src/
 
 | Tecnologia | Uso |
 |---|---|
-| React Native + Expo SDK 51 | Framework mobile |
+| React Native + Expo SDK 55 | Framework mobile |
 | TypeScript | Tipagem estática |
 | React Navigation (Tabs + Stack) | Navegação |
 | Context API + Custom Hooks | Estado global |
