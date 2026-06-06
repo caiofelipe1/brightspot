@@ -22,15 +22,6 @@ export function getRiskLabel(risk: RiskLevel): string {
   }
 }
 
-export function getRiskEmoji(risk: RiskLevel): string {
-  switch (risk) {
-    case 'safe': return '✅';
-    case 'attention': return '⚠️';
-    case 'critical': return '🚨';
-    default: return '❓';
-  }
-}
-
 // ─── Mode ────────────────────────────────────────────────────────────────
 export function getModeLabel(mode: OperationMode): string {
   switch (mode) {
@@ -39,28 +30,6 @@ export function getModeLabel(mode: OperationMode): string {
     case 'blackbox': return 'Caixa-Preta';
     case 'alert': return 'Alerta';
   }
-}
-
-export function getModeEmoji(mode: OperationMode): string {
-  switch (mode) {
-    case 'exploration': return '🔭';
-    case 'economy': return '🔋';
-    case 'blackbox': return '📦';
-    case 'alert': return '🔔';
-  }
-}
-
-// ─── Date ────────────────────────────────────────────────────────────────
-export function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMin = Math.floor(diffMs / 60000);
-
-  if (diffMin < 1) return 'Agora mesmo';
-  if (diffMin < 60) return `${diffMin}min atrás`;
-  if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h atrás`;
-  return date.toLocaleDateString('pt-BR');
 }
 
 // ─── Sensors ─────────────────────────────────────────────────────────────
@@ -84,14 +53,17 @@ export function getSensorLabel(key: keyof SensorReading): string {
   }
 }
 
-export function getSensorEmoji(key: keyof SensorReading): string {
-  switch (key) {
-    case 'temperature': return '🌡️';
-    case 'humidity': return '💧';
-    case 'luminosity': return '💡';
-    case 'airQuality': return '🌬️';
-    case 'vibration': return '📳';
-  }
+// ─── Date ────────────────────────────────────────────────────────────────
+export function formatTimestamp(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return 'Agora mesmo';
+  if (diffMin < 60) return `${diffMin}min atrás`;
+  if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h atrás`;
+  return date.toLocaleDateString('pt-BR');
 }
 
 // ─── Battery ─────────────────────────────────────────────────────────────

@@ -9,6 +9,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Settings, Moon, Sun, Smartphone, Trash2,
+  Satellite, Key, Rocket, Globe, Telescope,
+} from 'lucide-react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
 import { storage, STORAGE_KEYS } from '../storage';
@@ -40,14 +44,20 @@ export function SettingsScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>⚙️ Configurações</Text>
+          <View style={styles.titleRow}>
+            <Settings size={22} color={colors.text} />
+            <Text style={[styles.title, { color: colors.text }]}>Configurações</Text>
+          </View>
         </View>
 
         {/* Appearance */}
         <SectionHeader label="Aparência" colors={colors} />
 
         <SettingRow colors={colors}>
-          <Text style={[styles.settingLabel, { color: colors.text }]}>Modo escuro</Text>
+          <View style={styles.labelRow}>
+            <Moon size={18} color={colors.text} />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>Modo escuro</Text>
+          </View>
           <Switch
             value={isDark}
             onValueChange={(val) => setThemeMode(val ? 'dark' : 'light')}
@@ -57,26 +67,29 @@ export function SettingsScreen() {
         </SettingRow>
 
         <View style={[styles.themeRow, { borderColor: colors.border }]}>
-          {(['dark', 'light', 'system'] as const).map((mode) => (
-            <TouchableOpacity
-              key={mode}
-              style={[
-                styles.themeBtn,
-                {
-                  backgroundColor: themeMode === mode ? colors.primary : colors.card,
-                  borderColor: themeMode === mode ? colors.primary : colors.border,
-                },
-              ]}
-              onPress={() => setThemeMode(mode)}
-            >
-              <Text style={[
-                styles.themeBtnText,
-                { color: themeMode === mode ? colors.white : colors.textSecondary },
-              ]}>
-                {mode === 'dark' ? '🌙 Escuro' : mode === 'light' ? '☀️ Claro' : '📱 Sistema'}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {(['dark', 'light', 'system'] as const).map((mode) => {
+            const ThemeIcon = mode === 'dark' ? Moon : mode === 'light' ? Sun : Smartphone;
+            const label = mode === 'dark' ? 'Escuro' : mode === 'light' ? 'Claro' : 'Sistema';
+            const active = themeMode === mode;
+            return (
+              <TouchableOpacity
+                key={mode}
+                style={[
+                  styles.themeBtn,
+                  {
+                    backgroundColor: active ? colors.primary : colors.card,
+                    borderColor: active ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => setThemeMode(mode)}
+              >
+                <ThemeIcon size={14} color={active ? colors.white : colors.textSecondary} />
+                <Text style={[styles.themeBtnText, { color: active ? colors.white : colors.textSecondary }]}>
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Stats */}
@@ -85,24 +98,9 @@ export function SettingsScreen() {
         <View style={[styles.statsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <StatRow label="Total de ambientes" value={logs.length} colors={colors} />
           <StatRow label="Favoritos" value={favorites.length} colors={colors} />
-          <StatRow
-            label="Críticos"
-            value={logs.filter((l) => l.riskLevel === 'critical').length}
-            colors={colors}
-            valueColor={colors.danger}
-          />
-          <StatRow
-            label="Em atenção"
-            value={logs.filter((l) => l.riskLevel === 'attention').length}
-            colors={colors}
-            valueColor={colors.warning}
-          />
-          <StatRow
-            label="Seguros"
-            value={logs.filter((l) => l.riskLevel === 'safe').length}
-            colors={colors}
-            valueColor={colors.success}
-          />
+          <StatRow label="Críticos" value={logs.filter((l) => l.riskLevel === 'critical').length} colors={colors} valueColor={colors.danger} />
+          <StatRow label="Em atenção" value={logs.filter((l) => l.riskLevel === 'attention').length} colors={colors} valueColor={colors.warning} />
+          <StatRow label="Seguros" value={logs.filter((l) => l.riskLevel === 'safe').length} colors={colors} valueColor={colors.success} />
         </View>
 
         {/* Data */}
@@ -112,8 +110,9 @@ export function SettingsScreen() {
           style={[styles.dangerBtn, { borderColor: colors.danger }]}
           onPress={handleClearData}
         >
+          <Trash2 size={17} color={colors.danger} />
           <Text style={[styles.dangerText, { color: colors.danger }]}>
-            🗑️ Limpar todos os dados
+            Limpar todos os dados
           </Text>
         </TouchableOpacity>
 
@@ -121,7 +120,10 @@ export function SettingsScreen() {
         <SectionHeader label="Sobre" colors={colors} />
 
         <View style={[styles.aboutCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.aboutTitle, { color: colors.text }]}>🛰️ BrightSpot</Text>
+          <View style={styles.aboutTitleRow}>
+            <Satellite size={20} color={colors.text} />
+            <Text style={[styles.aboutTitle, { color: colors.text }]}>BrightSpot</Text>
+          </View>
           <Text style={[styles.aboutVersion, { color: colors.textMuted }]}>v1.0.0 · Global Solution 2026</Text>
           <Text style={[styles.aboutDesc, { color: colors.textSecondary }]}>
             Sistema de Inteligência Ambiental para exploração de ambientes remotos e de difícil acesso.
@@ -133,16 +135,28 @@ export function SettingsScreen() {
 
         {/* API Info */}
         <View style={[styles.apiCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-          <Text style={[styles.apiTitle, { color: colors.text }]}>🔑 APIs Integradas</Text>
-          <Text style={[styles.apiItem, { color: colors.textSecondary }]}>
-            🚀 NASA APOD — Imagem Astronômica do Dia
-          </Text>
-          <Text style={[styles.apiItem, { color: colors.textSecondary }]}>
-            🔭 NASA Mars Rover — Fotos de Marte
-          </Text>
-          <Text style={[styles.apiItem, { color: colors.textSecondary }]}>
-            🌍 OpenWeatherMap — Dados Climáticos
-          </Text>
+          <View style={styles.labelRow}>
+            <Key size={15} color={colors.text} />
+            <Text style={[styles.apiTitle, { color: colors.text }]}>APIs Integradas</Text>
+          </View>
+          <View style={styles.apiItem}>
+            <Rocket size={13} color={colors.textSecondary} />
+            <Text style={[styles.apiItemText, { color: colors.textSecondary }]}>
+              NASA APOD — Imagem Astronômica do Dia
+            </Text>
+          </View>
+          <View style={styles.apiItem}>
+            <Telescope size={13} color={colors.textSecondary} />
+            <Text style={[styles.apiItemText, { color: colors.textSecondary }]}>
+              NASA Mars Rover — Fotos de Marte
+            </Text>
+          </View>
+          <View style={styles.apiItem}>
+            <Globe size={13} color={colors.textSecondary} />
+            <Text style={[styles.apiItemText, { color: colors.textSecondary }]}>
+              OpenWeatherMap — Dados Climáticos
+            </Text>
+          </View>
         </View>
 
         <View style={{ height: Spacing.xxl }} />
@@ -187,6 +201,7 @@ function StatRow({
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.md },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   title: { fontSize: FontSize.xxl, fontWeight: '800' },
   sectionLabel: {
     fontSize: FontSize.xs,
@@ -206,6 +221,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: Spacing.sm,
   },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   settingLabel: { fontSize: FontSize.md },
   themeRow: {
     flexDirection: 'row',
@@ -215,10 +231,13 @@ const styles = StyleSheet.create({
   },
   themeBtn: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
     padding: Spacing.sm,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    alignItems: 'center',
   },
   themeBtnText: { fontSize: FontSize.sm, fontWeight: '600' },
   statsCard: {
@@ -233,11 +252,14 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: FontSize.md },
   statValue: { fontSize: FontSize.md, fontWeight: '700' },
   dangerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
     marginHorizontal: Spacing.md,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    alignItems: 'center',
     marginBottom: Spacing.sm,
   },
   dangerText: { fontSize: FontSize.md, fontWeight: '600' },
@@ -247,8 +269,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
+    gap: Spacing.xs,
   },
-  aboutTitle: { fontSize: FontSize.xl, fontWeight: '800', marginBottom: 4 },
+  aboutTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: 2 },
+  aboutTitle: { fontSize: FontSize.xl, fontWeight: '800' },
   aboutVersion: { fontSize: FontSize.xs, marginBottom: Spacing.sm },
   aboutDesc: { fontSize: FontSize.sm, lineHeight: 20, marginBottom: Spacing.sm },
   aboutOds: { fontSize: FontSize.sm, fontWeight: '700' },
@@ -258,8 +282,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
-  apiTitle: { fontSize: FontSize.md, fontWeight: '700', marginBottom: Spacing.xs },
-  apiItem: { fontSize: FontSize.sm },
+  apiTitle: { fontSize: FontSize.md, fontWeight: '700' },
+  apiItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  apiItemText: { fontSize: FontSize.sm, flex: 1 },
 });

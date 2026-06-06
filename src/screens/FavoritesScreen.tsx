@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Star } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
@@ -21,7 +17,10 @@ export function FavoritesScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>⭐ Favoritos</Text>
+        <View style={styles.titleRow}>
+          <Star size={22} color={colors.warning} fill={colors.warning} />
+          <Text style={[styles.title, { color: colors.text }]}>Favoritos</Text>
+        </View>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           {favorites.length} ambiente{favorites.length !== 1 ? 's' : ''} salvo{favorites.length !== 1 ? 's' : ''}
         </Text>
@@ -50,12 +49,12 @@ export function FavoritesScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyEmoji}>⭐</Text>
+              <Star size={56} color={colors.textMuted} />
               <Text style={[styles.emptyTitle, { color: colors.text }]}>
                 Nenhum favorito ainda
               </Text>
               <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
-                Toque na estrela (☆) em qualquer ambiente para salvar aqui.
+                Toque na estrela em qualquer ambiente para salvar aqui.
               </Text>
             </View>
           }
@@ -73,6 +72,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     paddingBottom: Spacing.sm,
+    gap: 2,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   title: { fontSize: FontSize.xxl, fontWeight: '800' },
   subtitle: { fontSize: FontSize.sm, marginTop: 2 },
@@ -82,8 +87,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xxl * 2,
+    gap: Spacing.md,
   },
-  emptyEmoji: { fontSize: 56, marginBottom: Spacing.md },
-  emptyTitle: { fontSize: FontSize.xl, fontWeight: '700', marginBottom: Spacing.sm },
+  emptyTitle: { fontSize: FontSize.xl, fontWeight: '700' },
   emptyDesc: { fontSize: FontSize.md, textAlign: 'center', lineHeight: 22 },
 });

@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { getSensorEmoji, getSensorLabel, getSensorUnit } from '../utils';
+
+type IconComponent = React.ComponentType<{ size?: number; color?: string }>;
+import { getSensorLabel, getSensorUnit } from '../utils';
 import { SensorReading } from '../types';
 import { BorderRadius, FontSize, Spacing } from '../theme';
 
@@ -10,12 +13,21 @@ interface Props {
   value: number;
 }
 
+const SENSOR_ICONS: Record<keyof SensorReading, IconComponent> = {
+  temperature: Thermometer,
+  humidity: Droplets,
+  luminosity: Sun,
+  airQuality: Wind,
+  vibration: Activity,
+};
+
 export function SensorCard({ sensorKey, value }: Props) {
   const { colors } = useTheme();
+  const Icon = SENSOR_ICONS[sensorKey];
 
   return (
     <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <Text style={styles.emoji}>{getSensorEmoji(sensorKey)}</Text>
+      <Icon size={22} color={colors.primary} />
       <Text style={[styles.value, { color: colors.primary }]}>
         {value.toFixed(1)}
         <Text style={[styles.unit, { color: colors.textSecondary }]}>
@@ -38,10 +50,7 @@ const styles = StyleSheet.create({
     minWidth: 90,
     flex: 1,
     margin: Spacing.xs,
-  },
-  emoji: {
-    fontSize: 22,
-    marginBottom: Spacing.xs,
+    gap: Spacing.xs,
   },
   value: {
     fontSize: FontSize.lg,
@@ -53,7 +62,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FontSize.xs,
-    marginTop: 2,
     textAlign: 'center',
   },
 });

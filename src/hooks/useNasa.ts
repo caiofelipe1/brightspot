@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NasaApod, MarsPhoto } from '../types';
-import { fetchApod, fetchMarsPhotos } from '../services/nasaService';
+import { fetchApod, fetchMarsPhotos, getMockApod, getMockMarsPhotos } from '../services/nasaService';
 
 export function useApod() {
   const [apod, setApod] = useState<NasaApod | null>(null);
@@ -10,16 +10,22 @@ export function useApod() {
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
+
     fetchApod()
       .then((data) => {
         if (mounted) setApod(data);
       })
       .catch(() => {
-        if (mounted) setError('Não foi possível carregar a imagem da NASA.');
+        // Fallback para mock quando API não responde (rate limit ou sem conexão)
+        if (mounted) {
+          setApod(getMockApod());
+          setError('Exibindo dados de exemplo. Configure sua NASA API key para dados reais.');
+        }
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });
+
     return () => { mounted = false; };
   }, []);
 
@@ -34,16 +40,25 @@ export function useMarsPhotos(sol: number = 1000) {
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
+
     fetchMarsPhotos(sol)
       .then((data) => {
-        if (mounted) setPhotos(data);
+        if (mounted) {
+          // Se a API retornou mas sem fotos, usa mock
+          setPhotos(data.length > 0 ? data : getMockMarsPhotos());
+        }
       })
       .catch(() => {
-        if (mounted) setError('Não foi possível carregar fotos de Marte.');
+        // Fallback para mock quando API não responde
+        if (mounted) {
+          setPhotos(getMockMarsPhotos());
+          setError('Exibindo fotos de exemplo. Configure sua NASA API key para dados reais.');
+        }
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });
+
     return () => { mounted = false; };
   }, [sol]);
 

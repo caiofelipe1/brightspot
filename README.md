@@ -1,11 +1,11 @@
-# 🛰️ BrightSpot — Sistema de Inteligência Ambiental
+# BrightSpot — Sistema de Inteligência Ambiental
 
-> **FIAP Global Solution 2026 — Indústria Espacial**  
+> **FIAP Global Solution 2026 — Indústria Espacial**
 > Matéria: Desenvolvimento Mobile | React Native + Expo + TypeScript
 
 ---
 
-## 👥 Integrantes
+## Integrantes
 
 | Nome | RM |
 |------|-----|
@@ -17,9 +17,9 @@
 
 ---
 
-## 📱 Sobre o Projeto
+## Sobre o Projeto
 
-**BrightSpot** é um sistema de inteligência ambiental composto por um aplicativo mobile que monitora ambientes remotos, extremos ou de difícil acesso humano — como cavernas, minas e túneis subterrâneos.
+**BrightSpot** é um sistema de inteligência ambiental que monitora ambientes remotos, extremos ou de difícil acesso humano — como cavernas, minas e túneis subterrâneos.
 
 A solução conecta tecnologia espacial (sensoriamento remoto, operação em ambientes hostis, caixa-preta de dados) a problemas reais da Terra: **a tomada de decisão segura antes de expor pessoas a ambientes desconhecidos**.
 
@@ -27,26 +27,34 @@ A solução conecta tecnologia espacial (sensoriamento remoto, operação em amb
 
 ---
 
-## 🌍 Conexão com a Indústria Espacial
+## Conexão com a Indústria Espacial
 
 A lógica do BrightSpot é inspirada diretamente na exploração espacial:
 
-- **Ambientes hostis** → assim como em Marte, o gadget opera onde humanos não conseguem
-- **Caixa-preta ambiental** → registra logs mesmo sem conexão, como sistemas de bordo
-- **Autonomia** → decisão baseada em dados antes da exposição ao risco
-- **Dados satelitais/climáticos** → integração com OpenWeatherMap e NASA API
+- **Ambientes hostis** — assim como em Marte, o gadget opera onde humanos não conseguem
+- **Caixa-preta ambiental** — registra logs mesmo sem conexão, como sistemas de bordo
+- **Autonomia** — decisão baseada em dados antes da exposição ao risco
+- **Dados satelitais/climáticos** — integração com OpenWeatherMap e NASA API
 
 ---
 
-## 🌱 ODS Alinhados
+## ODS Alinhados
 
 - **ODS 9** — Indústria, inovação e infraestrutura
-- **ODS 11** — Cidades e comunidades sustentáveis  
+- **ODS 11** — Cidades e comunidades sustentáveis
 - **ODS 13** — Ação contra a mudança global do clima
 
 ---
 
-## 🚀 Como Executar
+## Screenshots
+
+| Home | Ambientes | Detalhe | Favoritos | Configurações |
+|------|-----------|---------|-----------|---------------|
+| ![Home](docs/screenshots/home.png) | ![Ambientes](docs/screenshots/environments.png) | ![Detalhe](docs/screenshots/detail.png) | ![Favoritos](docs/screenshots/favorites.png) | ![Config](docs/screenshots/settings.png) |
+
+---
+
+## Como Executar
 
 ### Pré-requisitos
 
@@ -67,11 +75,9 @@ npm install
 # Inicie o projeto (mesma rede Wi-Fi)
 npx expo start
 
-# Se o celular estiver em rede diferente da máquina (ex: dados móveis)
+# Se o celular estiver em rede diferente (ex: dados móveis)
 npx expo start --tunnel
 ```
-
-> **Nota:** use o `--tunnel` se o QR code não conectar normalmente. Na primeira execução, será pedida a instalação do `@expo/ngrok`.
 
 ### Executar em cada plataforma
 
@@ -86,9 +92,9 @@ npx expo start --ios
 npx expo start --web
 ```
 
-### ⚠️ Configuração de APIs (opcional)
+### Configuração de APIs (opcional)
 
-O app funciona com dados de exemplo sem configurar nenhuma API key.  
+O app funciona com dados de exemplo sem configurar nenhuma API key.
 Para dados reais, edite os arquivos:
 
 **`src/services/nasaService.ts`**
@@ -103,23 +109,23 @@ const API_KEY = 'SUA_CHAVE_AQUI'; // openweathermap.org (gratuito)
 
 ---
 
-## 📱 Funcionalidades
+## Funcionalidades
 
-### 🏠 Home (Dashboard)
+### Home (Dashboard)
 - Estatísticas em tempo real (ambientes críticos, atenção, seguros)
 - Leituras recentes com classificação de risco
 - Dados climáticos externos via OpenWeatherMap
 - Imagem Astronômica do Dia (NASA APOD)
 - Pull-to-refresh
 
-### 📡 Ambientes
+### Ambientes
 - Lista completa de leituras com FlatList
 - Busca por nome e localização
 - Filtros por nível de risco (Crítico / Atenção / Seguro)
 - Ordenação (mais recente, mais antigo, risco, bateria)
-- Swipe para remover
+- Remoção de ambientes
 
-### 📋 Detalhe do Ambiente
+### Detalhe do Ambiente
 - Análise completa com todos os sensores
 - Classificação de risco por IA (regras contextuais)
 - Recomendação de ação automática
@@ -127,24 +133,24 @@ const API_KEY = 'SUA_CHAVE_AQUI'; // openweathermap.org (gratuito)
 - Clima local via coordenadas GPS
 - Favoritar/desfavoritar
 
-### ⭐ Favoritos
+### Favoritos
 - Ambientes salvos com AsyncStorage
 - Persistência entre sessões
 
-### ⚙️ Configurações
+### Configurações
 - Dark mode / Light mode / Sistema
 - Estatísticas do app
 - Limpeza de dados local
 - Informações sobre as APIs integradas
 
-### 🔴 Galeria NASA
+### Galeria NASA
 - Fotos reais do rover Curiosity em Marte
 - Grid com visualização em modal
 - Integração com NASA Mars Photos API
 
 ---
 
-## 🧱 Arquitetura
+## Arquitetura
 
 ```
 src/
@@ -183,7 +189,7 @@ src/
 
 ---
 
-## 🧠 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 | Tecnologia | Uso |
 |---|---|
@@ -193,22 +199,23 @@ src/
 | Context API + Custom Hooks | Estado global |
 | AsyncStorage | Persistência local |
 | Axios | Consumo de APIs |
+| Lucide React Native | Ícones vetoriais |
 | NASA APOD API | Imagem astronômica do dia |
 | NASA Mars Photos API | Fotos do rover Curiosity |
 | OpenWeatherMap API | Dados climáticos |
 
 ---
 
-## 🏆 Critérios Atendidos
+## Critérios Atendidos
 
 | Critério | Status |
 |---|---|
-| Estrutura do Projeto | ✅ Arquitetura em camadas, componentização completa |
-| React Native + TypeScript | ✅ Tipagem forte em todos os arquivos |
-| Navegação | ✅ Bottom Tabs + Native Stack |
-| Consumo de API | ✅ NASA API + OpenWeatherMap via Axios |
-| Persistência Local | ✅ AsyncStorage para logs, favoritos e tema |
-| Interface (UI/UX) | ✅ Dark/Light mode, skeletons, cards modernos |
-| Funcionalidades | ✅ Dashboard, listagem, filtros, busca, favoritos |
-| Código e Boas Práticas | ✅ Service layer, hooks, separação de responsabilidades |
-| Criatividade e Inovação | ✅ Tema espacial aplicado a problema real da Terra |
+| Estrutura do Projeto | Arquitetura em camadas, componentização completa |
+| React Native + TypeScript | Tipagem forte em todos os arquivos |
+| Navegação | Bottom Tabs + Native Stack |
+| Consumo de API | NASA API + OpenWeatherMap via Axios |
+| Persistência Local | AsyncStorage para logs, favoritos e tema |
+| Interface (UI/UX) | Dark/Light mode, skeletons, ícones vetoriais, cards modernos |
+| Funcionalidades | Dashboard, listagem, filtros, busca, favoritos, remoção |
+| Código e Boas Práticas | Service layer, hooks, separação de responsabilidades |
+| Criatividade e Inovação | Tema espacial aplicado a problema real da Terra |

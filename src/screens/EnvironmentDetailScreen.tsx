@@ -7,8 +7,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ChevronLeft, Star, MapPin, Clock, Battery,
+  Wifi, WifiOff, Bot, BarChart3, Globe,
+  Compass, BatteryCharging, Archive, Bell,
+  Droplets, Wind,
+} from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackParamList, SensorReading } from '../types';
+import { HomeStackParamList, SensorReading, OperationMode } from '../types';
+
+type IconComponent = React.ComponentType<{ size?: number; color?: string; fill?: string }>;
 import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
 import { RiskBadge } from '../components/RiskBadge';
@@ -16,7 +24,6 @@ import { SensorCard } from '../components/SensorCard';
 import { useWeather } from '../hooks/useWeather';
 import {
   formatTimestamp,
-  getModeEmoji,
   getModeLabel,
   getBatteryColor,
   getRiskColor,
@@ -24,6 +31,13 @@ import {
 import { BorderRadius, FontSize, Spacing } from '../theme';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'EnvironmentDetail'>;
+
+const MODE_ICONS: Record<OperationMode, IconComponent> = {
+  exploration: Compass,
+  economy: BatteryCharging,
+  blackbox: Archive,
+  alert: Bell,
+};
 
 export function EnvironmentDetailScreen({ route, navigation }: Props) {
   const { log } = route.params;
@@ -34,12 +48,11 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
     log.coordinates?.longitude
   );
 
-  // Get latest version from context (favorite state may have changed)
   const currentLog = logs.find((l) => l.id === log.id) ?? log;
   const riskColor = getRiskColor(currentLog.riskLevel, colors);
   const batteryColor = getBatteryColor(currentLog.batteryLevel, colors);
-
   const sensorKeys = Object.keys(currentLog.sensors) as (keyof SensorReading)[];
+  const ModeIcon = MODE_ICONS[currentLog.mode];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -52,18 +65,28 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
           ]}
         >
           <View style={styles.heroHeader}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={[styles.back, { color: colors.primary }]}>← Voltar</Text>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+              <ChevronLeft size={20} color={colors.primary} />
+              <Text style={[styles.back, { color: colors.primary }]}>Voltar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => toggleFavorite(currentLog.id)}>
-              <Text style={styles.fav}>{currentLog.isFavorite ? '⭐' : '☆'}</Text>
+              <Star
+                size={22}
+                color={currentLog.isFavorite ? colors.warning : colors.textMuted}
+                fill={currentLog.isFavorite ? colors.warning : 'transparent'}
+              />
             </TouchableOpacity>
           </View>
 
           <Text style={[styles.heroName, { color: colors.text }]}>{currentLog.name}</Text>
-          <Text style={[styles.heroLocation, { color: colors.textSecondary }]}>
-            📍 {currentLog.location}
-          </Text>
+
+          <View style={styles.infoRow}>
+            <MapPin size={13} color={colors.textSecondary} />
+            <Text style={[styles.heroLocation, { color: colors.textSecondary }]}>
+              {currentLog.location}
+            </Text>
+          </View>
+
           {currentLog.coordinates && (
             <Text style={[styles.heroCoords, { color: colors.textMuted }]}>
               {currentLog.coordinates.latitude.toFixed(3)}, {currentLog.coordinates.longitude.toFixed(3)}
@@ -73,8 +96,9 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
           <View style={styles.heroRow}>
             <RiskBadge risk={currentLog.riskLevel} size="lg" />
             <View style={[styles.modeBadge, { backgroundColor: colors.surfaceElevated }]}>
+              <ModeIcon size={13} color={colors.textSecondary} />
               <Text style={[styles.modeText, { color: colors.textSecondary }]}>
-                {getModeEmoji(currentLog.mode)} {getModeLabel(currentLog.mode)}
+                {getModeLabel(currentLog.mode)}
               </Text>
             </View>
           </View>
@@ -84,30 +108,46 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
         <View style={styles.statusRow}>
           <View style={[styles.statusCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.statusLabel, { color: colors.textMuted }]}>Bateria</Text>
-            <Text style={[styles.statusValue, { color: batteryColor }]}>
-              🔋 {currentLog.batteryLevel}%
-            </Text>
+            <View style={styles.infoRow}>
+              <Battery size={14} color={batteryColor} />
+              <Text style={[styles.statusValue, { color: batteryColor }]}>
+                {currentLog.batteryLevel}%
+              </Text>
+            </View>
           </View>
           <View style={[styles.statusCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.statusLabel, { color: colors.textMuted }]}>Conexão</Text>
-            <Text style={[
-              styles.statusValue,
-              { color: currentLog.hasConnection ? colors.success : colors.warning },
-            ]}>
-              {currentLog.hasConnection ? '🟢 Online' : '🟡 Offline'}
-            </Text>
+            <View style={styles.infoRow}>
+              {currentLog.hasConnection ? (
+                <Wifi size={14} color={colors.success} />
+              ) : (
+                <WifiOff size={14} color={colors.warning} />
+              )}
+              <Text style={[
+                styles.statusValue,
+                { color: currentLog.hasConnection ? colors.success : colors.warning },
+              ]}>
+                {currentLog.hasConnection ? 'Online' : 'Offline'}
+              </Text>
+            </View>
           </View>
           <View style={[styles.statusCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.statusLabel, { color: colors.textMuted }]}>Última leitura</Text>
-            <Text style={[styles.statusValue, { color: colors.text }]}>
-              🕐 {formatTimestamp(currentLog.timestamp)}
-            </Text>
+            <View style={styles.infoRow}>
+              <Clock size={12} color={colors.text} />
+              <Text style={[styles.statusValue, { color: colors.text }]}>
+                {formatTimestamp(currentLog.timestamp)}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* AI Recommendation */}
         <View style={[styles.aiCard, { backgroundColor: `${riskColor}10`, borderColor: `${riskColor}40` }]}>
-          <Text style={[styles.aiTitle, { color: colors.text }]}>🤖 Análise de IA</Text>
+          <View style={styles.infoRow}>
+            <Bot size={17} color={colors.text} />
+            <Text style={[styles.aiTitle, { color: colors.text }]}>Análise de IA</Text>
+          </View>
           <Text style={[styles.aiText, { color: colors.textSecondary }]}>
             {currentLog.aiRecommendation}
           </Text>
@@ -115,7 +155,10 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
 
         {/* Sensors grid */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>📊 Leituras dos Sensores</Text>
+          <View style={styles.infoRow}>
+            <BarChart3 size={17} color={colors.text} />
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Leituras dos Sensores</Text>
+          </View>
           <View style={styles.sensorsGrid}>
             {sensorKeys.map((key) => (
               <SensorCard
@@ -130,20 +173,29 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
         {/* Local weather */}
         {weather && (
           <View style={[styles.weatherCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              🌍 Clima no Local
-            </Text>
+            <View style={styles.infoRow}>
+              <Globe size={17} color={colors.text} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Clima no Local</Text>
+            </View>
             <View style={styles.weatherRow}>
               <Text style={[styles.weatherTemp, { color: colors.primary }]}>
                 {Math.round(weather.main.temp)}°C
               </Text>
-              <View>
+              <View style={{ gap: 4 }}>
                 <Text style={[styles.weatherDesc, { color: colors.textSecondary }]}>
                   {weather.weather[0].description}
                 </Text>
-                <Text style={[styles.weatherMeta, { color: colors.textMuted }]}>
-                  💧 {weather.main.humidity}% · 💨 {weather.wind.speed}m/s
-                </Text>
+                <View style={styles.infoRow}>
+                  <Droplets size={12} color={colors.textMuted} />
+                  <Text style={[styles.weatherMeta, { color: colors.textMuted }]}>
+                    {weather.main.humidity}%
+                  </Text>
+                  <Text style={{ color: colors.textMuted }}> · </Text>
+                  <Wind size={12} color={colors.textMuted} />
+                  <Text style={[styles.weatherMeta, { color: colors.textMuted }]}>
+                    {weather.wind.speed}m/s
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -161,19 +213,29 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderBottomWidth: 1,
     paddingBottom: Spacing.lg,
+    gap: 6,
   },
   heroHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: Spacing.md,
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
   back: { fontSize: FontSize.md, fontWeight: '600' },
-  fav: { fontSize: 22 },
-  heroName: { fontSize: FontSize.xxl, fontWeight: '800', marginBottom: 4 },
-  heroLocation: { fontSize: FontSize.sm, marginBottom: 2 },
-  heroCoords: { fontSize: FontSize.xs, marginBottom: Spacing.md },
-  heroRow: { flexDirection: 'row', gap: Spacing.sm, alignItems: 'center', flexWrap: 'wrap' },
+  heroName: { fontSize: FontSize.xxl, fontWeight: '800' },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  heroLocation: { fontSize: FontSize.sm, flex: 1 },
+  heroCoords: { fontSize: FontSize.xs },
+  heroRow: { flexDirection: 'row', gap: Spacing.sm, alignItems: 'center', flexWrap: 'wrap', marginTop: 4 },
   modeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
@@ -190,8 +252,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.sm,
     alignItems: 'center',
+    gap: 4,
   },
-  statusLabel: { fontSize: FontSize.xs, marginBottom: 2 },
+  statusLabel: { fontSize: FontSize.xs },
   statusValue: { fontSize: FontSize.xs, fontWeight: '700', textAlign: 'center' },
   aiCard: {
     marginHorizontal: Spacing.md,
@@ -199,11 +262,12 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
+    gap: Spacing.sm,
   },
-  aiTitle: { fontSize: FontSize.md, fontWeight: '700', marginBottom: Spacing.sm },
+  aiTitle: { fontSize: FontSize.md, fontWeight: '700' },
   aiText: { fontSize: FontSize.sm, lineHeight: 22 },
-  section: { paddingHorizontal: Spacing.md, marginBottom: Spacing.md },
-  sectionTitle: { fontSize: FontSize.lg, fontWeight: '700', marginBottom: Spacing.sm },
+  section: { paddingHorizontal: Spacing.md, marginBottom: Spacing.md, gap: Spacing.sm },
+  sectionTitle: { fontSize: FontSize.lg, fontWeight: '700' },
   sensorsGrid: { flexDirection: 'row', flexWrap: 'wrap', margin: -Spacing.xs },
   weatherCard: {
     marginHorizontal: Spacing.md,
@@ -211,9 +275,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
+    gap: Spacing.sm,
   },
-  weatherRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginTop: Spacing.sm },
+  weatherRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   weatherTemp: { fontSize: FontSize.xxxl, fontWeight: '800' },
   weatherDesc: { fontSize: FontSize.sm, textTransform: 'capitalize' },
-  weatherMeta: { fontSize: FontSize.xs, marginTop: 4 },
+  weatherMeta: { fontSize: FontSize.xs },
 });

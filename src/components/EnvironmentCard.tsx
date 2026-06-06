@@ -1,33 +1,37 @@
 import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import { EnvironmentLog } from '../types';
+  MapPin, Clock, Wifi, WifiOff, Star, Trash2,
+  Compass, BatteryCharging, Archive, Bell,
+} from 'lucide-react-native';
+import { EnvironmentLog, OperationMode } from '../types';
+
+type IconComponent = React.ComponentType<{ size?: number; color?: string; fill?: string }>;
 import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
 import { RiskBadge } from './RiskBadge';
-import {
-  formatTimestamp,
-  getModeEmoji,
-  getModeLabel,
-  getBatteryColor,
-  getRiskColor,
-} from '../utils';
+import { formatTimestamp, getModeLabel, getBatteryColor, getRiskColor } from '../utils';
 import { BorderRadius, FontSize, Spacing } from '../theme';
 
 interface Props {
   log: EnvironmentLog;
   onPress: () => void;
+  onDelete?: () => void;
 }
 
-export function EnvironmentCard({ log, onPress }: Props) {
+const MODE_ICONS: Record<OperationMode, IconComponent> = {
+  exploration: Compass,
+  economy: BatteryCharging,
+  blackbox: Archive,
+  alert: Bell,
+};
+
+export function EnvironmentCard({ log, onPress, onDelete }: Props) {
   const { colors } = useTheme();
   const { toggleFavorite } = useEnvironments();
   const batteryColor = getBatteryColor(log.batteryLevel, colors);
   const riskColor = getRiskColor(log.riskLevel, colors);
+  const ModeIcon = MODE_ICONS[log.mode];
 
   return (
     <TouchableOpacity
@@ -48,54 +52,64 @@ export function EnvironmentCard({ log, onPress }: Props) {
           <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
             {log.name}
           </Text>
-          <TouchableOpacity onPress={() => toggleFavorite(log.id)}>
-            <Text style={styles.fav}>{log.isFavorite ? '⭐' : '☆'}</Text>
-          </TouchableOpacity>
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => toggleFavorite(log.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 4 }}>
+              <Star
+                size={18}
+                color={log.isFavorite ? colors.warning : colors.textMuted}
+                fill={log.isFavorite ? colors.warning : 'transparent'}
+              />
+            </TouchableOpacity>
+            {onDelete && (
+              <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 4, right: 8 }}>
+                <Trash2 size={16} color={colors.danger} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-        <Text style={[styles.location, { color: colors.textSecondary }]} numberOfLines={1}>
-          📍 {log.location}
-        </Text>
+        <View style={styles.infoRow}>
+          <MapPin size={12} color={colors.textSecondary} />
+          <Text style={[styles.location, { color: colors.textSecondary }]} numberOfLines={1}>
+            {log.location}
+          </Text>
+        </View>
       </View>
 
       {/* Badges row */}
       <View style={styles.row}>
         <RiskBadge risk={log.riskLevel} size="sm" />
         <View style={[styles.modeBadge, { backgroundColor: colors.surfaceElevated }]}>
+          <ModeIcon size={11} color={colors.textSecondary} />
           <Text style={[styles.modeText, { color: colors.textSecondary }]}>
-            {getModeEmoji(log.mode)} {getModeLabel(log.mode)}
+            {getModeLabel(log.mode)}
           </Text>
         </View>
       </View>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={[styles.meta, { color: colors.textMuted }]}>
-          🕐 {formatTimestamp(log.timestamp)}
-        </Text>
+        <View style={styles.infoRow}>
+          <Clock size={11} color={colors.textMuted} />
+          <Text style={[styles.meta, { color: colors.textMuted }]}>
+            {formatTimestamp(log.timestamp)}
+          </Text>
+        </View>
         <View style={styles.battery}>
-          <View
-            style={[
-              styles.batteryBar,
-              { backgroundColor: colors.border },
-            ]}
-          >
+          <View style={[styles.batteryBar, { backgroundColor: colors.border }]}>
             <View
               style={[
                 styles.batteryFill,
-                {
-                  backgroundColor: batteryColor,
-                  width: `${log.batteryLevel}%` as any,
-                },
+                { backgroundColor: batteryColor, width: `${log.batteryLevel}%` as any },
               ]}
             />
           </View>
           <Text style={[styles.batteryText, { color: batteryColor }]}>
             {log.batteryLevel}%
           </Text>
-          {!log.hasConnection && (
-            <Text style={[styles.offline, { color: colors.warning }]}>
-              {' '}📦 Offline
-            </Text>
+          {log.hasConnection ? (
+            <Wifi size={12} color={colors.success} />
+          ) : (
+            <WifiOff size={12} color={colors.warning} />
           )}
         </View>
       </View>
@@ -113,6 +127,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.sm,
+    gap: 4,
   },
   titleRow: {
     flexDirection: 'row',
@@ -125,20 +140,31 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: Spacing.sm,
   },
-  fav: {
-    fontSize: 18,
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   location: {
     fontSize: FontSize.sm,
-    marginTop: 2,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
     gap: Spacing.sm,
     marginBottom: Spacing.sm,
     flexWrap: 'wrap',
+    alignItems: 'center',
   },
   modeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.full,
@@ -173,8 +199,5 @@ const styles = StyleSheet.create({
   batteryText: {
     fontSize: FontSize.xs,
     fontWeight: '600',
-  },
-  offline: {
-    fontSize: FontSize.xs,
   },
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,13 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AlertOctagon, AlertTriangle, CheckCircle2, Radio,
+  Globe, Satellite, Rocket, MapPin, Clock, Bot,
+} from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+type IconComponent = React.ComponentType<{ size?: number; color?: string }>;
 import { HomeStackParamList } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
@@ -28,6 +34,7 @@ export function HomeScreen({ navigation }: Props) {
   const { apod, isLoading: apodLoading } = useApod();
   const { weather } = useWeather();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [apodImageError, setApodImageError] = useState(false);
 
   const criticalCount = logs.filter((l) => l.riskLevel === 'critical').length;
   const attentionCount = logs.filter((l) => l.riskLevel === 'attention').length;
@@ -66,42 +73,19 @@ export function HomeScreen({ navigation }: Props) {
 
         {/* Stats row */}
         <View style={styles.statsRow}>
-          <StatCard
-            label="Críticos"
-            value={criticalCount}
-            color={colors.danger}
-            emoji="🚨"
-            colors={colors}
-          />
-          <StatCard
-            label="Atenção"
-            value={attentionCount}
-            color={colors.warning}
-            emoji="⚠️"
-            colors={colors}
-          />
-          <StatCard
-            label="Seguros"
-            value={safeCount}
-            color={colors.success}
-            emoji="✅"
-            colors={colors}
-          />
-          <StatCard
-            label="Total"
-            value={logs.length}
-            color={colors.primary}
-            emoji="📡"
-            colors={colors}
-          />
+          <StatCard label="Críticos" value={criticalCount} color={colors.danger} icon={AlertOctagon} colors={colors} />
+          <StatCard label="Atenção" value={attentionCount} color={colors.warning} icon={AlertTriangle} colors={colors} />
+          <StatCard label="Seguros" value={safeCount} color={colors.success} icon={CheckCircle2} colors={colors} />
+          <StatCard label="Total" value={logs.length} color={colors.primary} icon={Radio} colors={colors} />
         </View>
 
         {/* Weather card */}
         {weather && (
           <View style={[styles.weatherCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              🌍 Condições Externas
-            </Text>
+            <View style={styles.sectionTitle}>
+              <Globe size={17} color={colors.text} />
+              <Text style={[styles.sectionTitleText, { color: colors.text }]}>Condições Externas</Text>
+            </View>
             <View style={styles.weatherRow}>
               <View>
                 <Text style={[styles.weatherTemp, { color: colors.primary }]}>
@@ -110,20 +94,32 @@ export function HomeScreen({ navigation }: Props) {
                 <Text style={[styles.weatherDesc, { color: colors.textSecondary }]}>
                   {weather.weather[0].description}
                 </Text>
-                <Text style={[styles.weatherCity, { color: colors.textMuted }]}>
-                  📍 {weather.name}, {weather.sys.country}
-                </Text>
+                <View style={styles.infoRow}>
+                  <MapPin size={11} color={colors.textMuted} />
+                  <Text style={[styles.weatherCity, { color: colors.textMuted }]}>
+                    {weather.name}, {weather.sys.country}
+                  </Text>
+                </View>
               </View>
               <View style={styles.weatherDetails}>
-                <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
-                  💧 Umidade: {weather.main.humidity}%
-                </Text>
-                <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
-                  💨 Vento: {weather.wind.speed} m/s
-                </Text>
-                <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
-                  🌡️ Sensação: {Math.round(weather.main.feels_like)}°C
-                </Text>
+                <View style={styles.infoRow}>
+                  <Globe size={13} color={colors.textSecondary} />
+                  <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
+                    Umidade: {weather.main.humidity}%
+                  </Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Satellite size={13} color={colors.textSecondary} />
+                  <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
+                    Vento: {weather.wind.speed} m/s
+                  </Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <AlertTriangle size={13} color={colors.textSecondary} />
+                  <Text style={[styles.weatherMeta, { color: colors.textSecondary }]}>
+                    Sensação: {Math.round(weather.main.feels_like)}°C
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -132,9 +128,10 @@ export function HomeScreen({ navigation }: Props) {
         {/* Recent environments */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              📡 Leituras Recentes
-            </Text>
+            <View style={styles.sectionTitle}>
+              <Satellite size={17} color={colors.text} />
+              <Text style={[styles.sectionTitleText, { color: colors.text }]}>Leituras Recentes</Text>
+            </View>
             <TouchableOpacity onPress={() => navigation.navigate('NasaGallery')}>
               <Text style={[styles.seeAll, { color: colors.primary }]}>NASA →</Text>
             </TouchableOpacity>
@@ -160,21 +157,33 @@ export function HomeScreen({ navigation }: Props) {
                 </Text>
                 <RiskBadge risk={log.riskLevel} size="sm" />
               </View>
-              <Text style={[styles.recentMeta, { color: colors.textMuted }]}>
-                📍 {log.location} · 🕐 {formatTimestamp(log.timestamp)}
-              </Text>
-              <Text style={[styles.recentAi, { color: colors.textSecondary }]} numberOfLines={2}>
-                🤖 {log.aiRecommendation}
-              </Text>
+              <View style={styles.metaRow}>
+                <MapPin size={11} color={colors.textMuted} />
+                <Text style={[styles.recentMeta, { color: colors.textMuted }]} numberOfLines={1}>
+                  {log.location}
+                </Text>
+                <Text style={[styles.recentMeta, { color: colors.textMuted }]}> · </Text>
+                <Clock size={11} color={colors.textMuted} />
+                <Text style={[styles.recentMeta, { color: colors.textMuted }]}>
+                  {formatTimestamp(log.timestamp)}
+                </Text>
+              </View>
+              <View style={styles.metaRow}>
+                <Bot size={13} color={colors.textSecondary} />
+                <Text style={[styles.recentAi, { color: colors.textSecondary }]} numberOfLines={2}>
+                  {log.aiRecommendation}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* NASA APOD */}
         <View style={[styles.apodCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            🚀 NASA — Imagem do Dia
-          </Text>
+          <View style={styles.sectionTitle}>
+            <Rocket size={17} color={colors.text} />
+            <Text style={[styles.sectionTitleText, { color: colors.text }]}>NASA — Imagem do Dia</Text>
+          </View>
           {apodLoading ? (
             <>
               <Skeleton height={180} borderRadius={BorderRadius.md} style={{ marginVertical: Spacing.sm }} />
@@ -183,11 +192,12 @@ export function HomeScreen({ navigation }: Props) {
             </>
           ) : apod ? (
             <>
-              {apod.media_type === 'image' && (
+              {apod.media_type === 'image' && !apodImageError && (
                 <Image
                   source={{ uri: apod.url }}
                   style={styles.apodImage}
                   resizeMode="cover"
+                  onError={() => setApodImageError(true)}
                 />
               )}
               <Text style={[styles.apodTitle, { color: colors.text }]}>{apod.title}</Text>
@@ -214,11 +224,11 @@ interface StatCardProps {
   label: string;
   value: number;
   color: string;
-  emoji: string;
+  icon: IconComponent;
   colors: any;
 }
 
-function StatCard({ label, value, color, emoji, colors }: StatCardProps) {
+function StatCard({ label, value, color, icon: Icon, colors }: StatCardProps) {
   return (
     <View
       style={[
@@ -226,7 +236,7 @@ function StatCard({ label, value, color, emoji, colors }: StatCardProps) {
         { backgroundColor: `${color}15`, borderColor: `${color}33` },
       ]}
     >
-      <Text style={styles.statEmoji}>{emoji}</Text>
+      <Icon size={18} color={color} />
       <Text style={[styles.statValue, { color }]}>{value}</Text>
       <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{label}</Text>
     </View>
@@ -257,8 +267,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.sm,
     alignItems: 'center',
+    gap: 2,
   },
-  statEmoji: { fontSize: 18, marginBottom: 2 },
   statValue: { fontSize: FontSize.xl, fontWeight: '800' },
   statLabel: { fontSize: FontSize.xs, textAlign: 'center' },
   weatherCard: {
@@ -267,11 +277,12 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
+    gap: Spacing.sm,
   },
-  weatherRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.sm },
+  weatherRow: { flexDirection: 'row', justifyContent: 'space-between' },
   weatherTemp: { fontSize: FontSize.xxxl, fontWeight: '800' },
-  weatherDesc: { fontSize: FontSize.sm, textTransform: 'capitalize' },
-  weatherCity: { fontSize: FontSize.xs, marginTop: 4 },
+  weatherDesc: { fontSize: FontSize.sm, textTransform: 'capitalize', marginTop: 2 },
+  weatherCity: { fontSize: FontSize.xs },
   weatherDetails: { justifyContent: 'center', gap: 6 },
   weatherMeta: { fontSize: FontSize.sm },
   section: { paddingHorizontal: Spacing.md, marginBottom: Spacing.md },
@@ -281,7 +292,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.sm,
   },
-  sectionTitle: { fontSize: FontSize.lg, fontWeight: '700' },
+  sectionTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  sectionTitleText: { fontSize: FontSize.lg, fontWeight: '700' },
   seeAll: { fontSize: FontSize.sm, fontWeight: '600' },
   recentCard: {
     borderRadius: BorderRadius.md,
@@ -289,31 +305,33 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
+    gap: 6,
   },
   recentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
   },
   recentName: { fontSize: FontSize.md, fontWeight: '700', flex: 1, marginRight: Spacing.sm },
-  recentMeta: { fontSize: FontSize.xs, marginBottom: 6 },
-  recentAi: { fontSize: FontSize.sm, lineHeight: 18 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  recentMeta: { fontSize: FontSize.xs },
+  recentAi: { fontSize: FontSize.sm, lineHeight: 18, flex: 1 },
   apodCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
+    gap: Spacing.sm,
   },
   apodImage: {
     width: '100%',
     height: 180,
     borderRadius: BorderRadius.sm,
-    marginVertical: Spacing.sm,
   },
-  apodTitle: { fontSize: FontSize.md, fontWeight: '700', marginBottom: 4 },
-  apodDate: { fontSize: FontSize.xs, marginBottom: Spacing.sm },
+  apodTitle: { fontSize: FontSize.md, fontWeight: '700' },
+  apodDate: { fontSize: FontSize.xs },
   apodDesc: { fontSize: FontSize.sm, lineHeight: 20 },
   apodError: { fontSize: FontSize.sm, textAlign: 'center', padding: Spacing.md },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 });

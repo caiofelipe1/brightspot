@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Home, Satellite, Star, Settings } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../contexts/ThemeContext';
 import {
@@ -55,6 +56,7 @@ function EnvironmentsStackNavigator() {
 
 export function AppNavigator() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <NavigationContainer>
@@ -65,19 +67,18 @@ export function AppNavigator() {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
             borderTopWidth: 1,
-            height: 60,
-            paddingBottom: 8,
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom + 8,
           },
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.textMuted,
           tabBarIcon: ({ focused, color }) => {
-            const icons: Record<string, string> = {
-              Home: focused ? '🏠' : '🏡',
-              Environments: focused ? '📡' : '📶',
-              Favorites: focused ? '⭐' : '☆',
-              Settings: focused ? '⚙️' : '🔧',
-            };
-            return <Text style={{ fontSize: 20 }}>{icons[route.name]}</Text>;
+            const size = 22;
+            if (route.name === 'Home') return <Home size={size} color={color} />;
+            if (route.name === 'Environments') return <Satellite size={size} color={color} />;
+            if (route.name === 'Favorites') return <Star size={size} color={color} fill={focused ? color : 'transparent'} />;
+            if (route.name === 'Settings') return <Settings size={size} color={color} />;
+            return null;
           },
           tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         })}

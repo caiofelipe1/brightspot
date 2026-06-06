@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Search, ArrowUpDown, X } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EnvironmentsStackParamList, RiskLevel } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
@@ -24,9 +25,9 @@ type FilterRisk = 'all' | RiskLevel;
 
 const RISK_FILTERS: { label: string; value: FilterRisk }[] = [
   { label: 'Todos', value: 'all' },
-  { label: '🚨 Crítico', value: 'critical' },
-  { label: '⚠️ Atenção', value: 'attention' },
-  { label: '✅ Seguro', value: 'safe' },
+  { label: 'Crítico', value: 'critical' },
+  { label: 'Atenção', value: 'attention' },
+  { label: 'Seguro', value: 'safe' },
 ];
 
 const SORT_OPTIONS: { label: string; value: SortKey }[] = [
@@ -101,7 +102,7 @@ export function EnvironmentsListScreen({ navigation }: Props) {
       {/* Search */}
       <View style={styles.searchRow}>
         <View style={[styles.searchBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={{ color: colors.textMuted }}>🔍</Text>
+          <Search size={16} color={colors.textMuted} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder="Buscar ambiente..."
@@ -111,7 +112,7 @@ export function EnvironmentsListScreen({ navigation }: Props) {
           />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={{ color: colors.textMuted }}>✕</Text>
+              <X size={16} color={colors.textMuted} />
             </TouchableOpacity>
           )}
         </View>
@@ -119,7 +120,7 @@ export function EnvironmentsListScreen({ navigation }: Props) {
           style={[styles.sortBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
           onPress={() => setShowSort(!showSort)}
         >
-          <Text style={{ color: colors.primary }}>↕</Text>
+          <ArrowUpDown size={18} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -188,12 +189,13 @@ export function EnvironmentsListScreen({ navigation }: Props) {
               <EnvironmentCard
                 log={item}
                 onPress={() => navigation.navigate('EnvironmentDetail', { log: item })}
+                onDelete={() => handleDelete(item.id, item.name)}
               />
             </View>
           )}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyEmoji}>📡</Text>
+              <Search size={48} color={colors.textMuted} />
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 Nenhum ambiente encontrado
               </Text>
@@ -262,7 +264,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
     fontSize: FontSize.sm,
   },
-  empty: { alignItems: 'center', paddingVertical: Spacing.xxl },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.md },
+  empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.md },
   emptyText: { fontSize: FontSize.md },
 });

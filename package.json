@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "typecheck": "node --stack-size=65536 ./node_modules/typescript/bin/tsc --noEmit"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.11",
@@ -18,8 +19,8 @@
     "expo": "~55.0.0",
     "expo-constants": "~55.0.16",
     "expo-linear-gradient": "~55.0.14",
-    "expo-location": "~55.1.10",
     "expo-status-bar": "~55.0.6",
+    "lucide-react-native": "^1.14.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
