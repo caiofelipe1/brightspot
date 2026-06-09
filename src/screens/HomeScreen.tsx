@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AlertOctagon, AlertTriangle, CheckCircle2, Radio,
-  Globe, Satellite, Rocket, MapPin, Clock, Bot,
+  Globe, Satellite, Rocket, MapPin, Clock, Bot, BarChart3,
 } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -22,6 +22,7 @@ import { useEnvironments } from '../contexts/EnvironmentsContext';
 import { useApod } from '../hooks/useNasa';
 import { useWeather } from '../hooks/useWeather';
 import { RiskBadge } from '../components/RiskBadge';
+import { RiskDonutChart } from '../components/RiskDonutChart';
 import { Skeleton } from '../components/Skeleton';
 import { formatTimestamp, getRiskColor } from '../utils';
 import { BorderRadius, FontSize, Spacing } from '../theme';
@@ -79,6 +80,15 @@ export function HomeScreen({ navigation }: Props) {
           <StatCard label="Atenção" value={attentionCount} color={colors.warning} icon={AlertTriangle} colors={colors} />
           <StatCard label="Seguros" value={safeCount} color={colors.success} icon={CheckCircle2} colors={colors} />
           <StatCard label="Total" value={logs.length} color={colors.primary} icon={Radio} colors={colors} />
+        </View>
+
+        {/* Risk distribution chart */}
+        <View style={[styles.chartCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.sectionTitle}>
+            <BarChart3 size={17} color={colors.text} />
+            <Text style={[styles.sectionTitleText, { color: colors.text }]}>Distribuição de Risco</Text>
+          </View>
+          <RiskDonutChart critical={criticalCount} attention={attentionCount} safe={safeCount} />
         </View>
 
         {/* Weather card */}
@@ -318,6 +328,14 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   recentMeta: { fontSize: FontSize.xs },
   recentAi: { fontSize: FontSize.sm, lineHeight: 18, flex: 1 },
+  chartCard: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
   apodCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,

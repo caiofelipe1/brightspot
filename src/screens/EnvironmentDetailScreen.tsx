@@ -21,6 +21,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useEnvironments } from '../contexts/EnvironmentsContext';
 import { RiskBadge } from '../components/RiskBadge';
 import { SensorCard } from '../components/SensorCard';
+import { SensorChart } from '../components/SensorChart';
 import { useWeather } from '../hooks/useWeather';
 import {
   formatTimestamp,
@@ -153,6 +154,15 @@ export function EnvironmentDetailScreen({ route, navigation }: Props) {
           </Text>
         </View>
 
+        {/* Sensor chart */}
+        <View style={[styles.sensorChartCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.infoRow}>
+            <BarChart3 size={17} color={colors.text} />
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Gráfico de Sensores</Text>
+          </View>
+          <SensorChart sensors={currentLog.sensors} />
+        </View>
+
         {/* Sensors grid */}
         <View style={styles.section}>
           <View style={styles.infoRow}>
@@ -269,6 +279,14 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: Spacing.md, marginBottom: Spacing.md, gap: Spacing.sm },
   sectionTitle: { fontSize: FontSize.lg, fontWeight: '700' },
   sensorsGrid: { flexDirection: 'row', flexWrap: 'wrap', margin: -Spacing.xs },
+  sensorChartCard: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
   weatherCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
