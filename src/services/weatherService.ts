@@ -2,7 +2,7 @@ import axios from 'axios';
 import { WeatherData } from '../types';
 
 // Chave gratuita em openweathermap.org/api
-const API_KEY = 'YOUR_OPENWEATHER_KEY';
+const API_KEY = '9b34ca7bf7edc308bb0314215e150668';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 const weatherApi = axios.create({
