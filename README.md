@@ -66,7 +66,7 @@ A lógica do BrightSpot é inspirada diretamente na exploração espacial:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/brightspot.git
+git clone https://github.com/caiofelipe1/brightspot.git
 cd brightspot
 
 # Instale as dependências
