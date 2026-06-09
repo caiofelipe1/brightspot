@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { WeatherData } from '../types';
 import { fetchWeatherByCoords, getMockWeather } from '../services/weatherService';
 
-export function useWeather(lat?: number, lon?: number) {
+export function useWeather(lat?: number, lon?: number, refreshKey: number = 0) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export function useWeather(lat?: number, lon?: number) {
 
     load();
     return () => { mounted = false; };
-  }, [lat, lon]);
+  }, [lat, lon, refreshKey]);
 
   return { weather, isLoading, error };
 }

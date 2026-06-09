@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { NasaApod, NasaMarsResponse, MarsPhoto } from '../types';
 
-const NASA_API_KEY = 'DEMO_KEY'; // substituir por chave real em nasa.gov/open/apis
+const NASA_API_KEY = 'bIIHTSsW6157bTAP6XBt4lW8cJ9oDxe9xrIH8EOv';
 const BASE_URL = 'https://api.nasa.gov';
 
 const nasaApi = axios.create({
@@ -58,46 +58,46 @@ export function getMockApod(): NasaApod {
 export function getMockMarsPhotos(): MarsPhoto[] {
   return [
     {
-      id: 102693,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_462135992EDR_F0470104FHAZ00323M_.JPG',
-      earth_date: '2015-06-03',
+      id: 1,
+      img_src: 'https://images-assets.nasa.gov/image/PIA16239/PIA16239~thumb.jpg',
+      earth_date: '2012-08-06',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Front Hazard Avoidance Camera' },
+      camera: { full_name: 'Mast Camera' },
     },
     {
-      id: 102694,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FRB_462135992EDR_F0470104FHAZ00323M_.JPG',
-      earth_date: '2015-06-03',
+      id: 2,
+      img_src: 'https://images-assets.nasa.gov/image/PIA17089/PIA17089~thumb.jpg',
+      earth_date: '2013-09-19',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Front Hazard Avoidance Camera' },
+      camera: { full_name: 'Navigation Camera' },
     },
     {
-      id: 102695,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/rcam/RLB_462135992EDR_F0470104RHAZ00323M_.JPG',
-      earth_date: '2015-06-03',
+      id: 3,
+      img_src: 'https://images-assets.nasa.gov/image/PIA19148/PIA19148~thumb.jpg',
+      earth_date: '2015-02-03',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Rear Hazard Avoidance Camera' },
+      camera: { full_name: 'Mars Hand Lens Imager' },
     },
     {
-      id: 102696,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NRB_462033642EDR_F0470000NCAM00273M_.JPG',
-      earth_date: '2015-06-03',
+      id: 4,
+      img_src: 'https://images-assets.nasa.gov/image/PIA20844/PIA20844~thumb.jpg',
+      earth_date: '2016-09-08',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Navigation Camera - Right' },
+      camera: { full_name: 'Mast Camera' },
     },
     {
-      id: 102697,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_462033642EDR_F0470000NCAM00273M_.JPG',
-      earth_date: '2015-06-03',
+      id: 5,
+      img_src: 'https://images-assets.nasa.gov/image/PIA21723/PIA21723~thumb.jpg',
+      earth_date: '2017-10-25',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Navigation Camera - Left' },
+      camera: { full_name: 'Mars Hand Lens Imager' },
     },
     {
-      id: 102698,
-      img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/mcam/1000MR0044631300400602E01_DXXX.jpg',
-      earth_date: '2015-06-03',
+      id: 6,
+      img_src: 'https://images-assets.nasa.gov/image/PIA22228/PIA22228~thumb.jpg',
+      earth_date: '2018-01-23',
       rover: { name: 'Curiosity', status: 'active' },
-      camera: { full_name: 'Mast Camera - Right' },
+      camera: { full_name: 'Mast Camera' },
     },
   ];
 }

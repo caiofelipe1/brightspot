@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NasaApod, MarsPhoto } from '../types';
 import { fetchApod, fetchMarsPhotos, getMockApod, getMockMarsPhotos } from '../services/nasaService';
 
-export function useApod() {
+export function useApod(refreshKey: number = 0) {
   const [apod, setApod] = useState<NasaApod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export function useApod() {
       });
 
     return () => { mounted = false; };
-  }, []);
+  }, [refreshKey]);
 
   return { apod, isLoading, error };
 }

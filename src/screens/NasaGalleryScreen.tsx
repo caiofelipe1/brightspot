@@ -70,11 +70,11 @@ export function NasaGalleryScreen() {
             />
           ))}
         </View>
-      ) : error || photos.length === 0 ? (
+      ) : photos.length === 0 ? (
         <View style={styles.error}>
           <Telescope size={48} color={colors.textMuted} />
           <Text style={[styles.errorText, { color: colors.textSecondary }]}>
-            {error ?? 'Nenhuma foto disponível. Verifique sua conexão.'}
+            Nenhuma foto disponível. Verifique sua conexão.
           </Text>
         </View>
       ) : (

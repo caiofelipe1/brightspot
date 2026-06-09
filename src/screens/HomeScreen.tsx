@@ -31,8 +31,9 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'HomeScreen'>;
 export function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { logs } = useEnvironments();
-  const { apod, isLoading: apodLoading } = useApod();
-  const { weather } = useWeather();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { apod, isLoading: apodLoading } = useApod(refreshKey);
+  const { weather } = useWeather(undefined, undefined, refreshKey);
   const [refreshing, setRefreshing] = React.useState(false);
   const [apodImageError, setApodImageError] = useState(false);
 
@@ -43,7 +44,8 @@ export function HomeScreen({ navigation }: Props) {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1500);
+    setRefreshKey((k) => k + 1);
+    setTimeout(() => setRefreshing(false), 2000);
   }, []);
 
   return (
